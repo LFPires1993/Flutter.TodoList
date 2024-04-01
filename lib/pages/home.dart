@@ -1,11 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todo_list/widgets/todo_list_item.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _todoController = TextEditingController();
+
   String textOnField = '';
+
+  final List<String> _todos = [];
 
   final _buttonsStyle = ElevatedButton.styleFrom(
     backgroundColor: const Color(0xff00d7f3),
@@ -15,84 +25,92 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  'Lista de tarefas',
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    'Lista de tarefas',
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      onChanged: changed,
-                      decoration: InputDecoration(
-                        labelText: 'Adicione uma tarefa',
-                        border: OutlineInputBorder(),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _todoController,
+                        // onChanged: changed,
+                        decoration: const InputDecoration(
+                          labelText: 'Adicione uma tarefa',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  ElevatedButton(
-                    onPressed: pressButton,
-                    child: Icon(
-                      Icons.add,
-                      size: 30,
-                      color: Colors.white,
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: addTask,
+                      style: _buttonsStyle,
+                      child: const Icon(
+                        Icons.add,
+                        size: 30,
+                        color: Colors.white,
+                      ),
                     ),
-                    style: _buttonsStyle,
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for(String todo in _todos)
+                        TodoListItem(title: todo)
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-              ListView(
-                children: [
-
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Você possuí x tarefas pendentes',
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Você possuí ${_todos.length} tarefas pendentes',
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Limpar tudo',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: _buttonsStyle,
-                  )
-                ],
-              )
-            ],
+                    ElevatedButton(
+                      onPressed: clearList,
+                      style: _buttonsStyle,
+                      child: const Text(
+                        'Limpar tudo',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  changed(String text) {
-    textOnField = text;
+  addTask() {
+    setState(() {
+      _todos.add(_todoController.text);
+      _todoController.clear();
+    });
   }
 
-  pressButton() {
-    print(textOnField);
+  clearList() {
+    setState(() {
+      _todos.clear();
+    });
   }
 }
