@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo_list/models/todo.dart';
 import 'package:todo_list/widgets/todo_list_item.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -12,11 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _todoController = TextEditingController();
-
-  String textOnField = '';
-
-  final List<String> _todos = [];
-
+  final List<Todo> _todos = [];
   final _buttonsStyle = ElevatedButton.styleFrom(
     backgroundColor: const Color(0xff00d7f3),
     padding: const EdgeInsets.all(17),
@@ -70,8 +68,8 @@ class _HomePageState extends State<HomePage> {
                   child: ListView(
                     shrinkWrap: true,
                     children: [
-                      for(String todo in _todos)
-                        TodoListItem(title: todo)
+                      for(Todo todo in _todos)
+                        TodoListItem(todo: todo)
                     ],
                   ),
                 ),
@@ -103,7 +101,7 @@ class _HomePageState extends State<HomePage> {
 
   addTask() {
     setState(() {
-      _todos.add(_todoController.text);
+      _todos.add(Todo(title: _todoController.text, dateTime: DateTime.now()));
       _todoController.clear();
     });
   }
