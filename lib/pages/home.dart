@@ -3,7 +3,6 @@ import 'package:todo_list/models/todo.dart';
 import 'package:todo_list/repositories/todo_repository.dart';
 import 'package:todo_list/widgets/todo_list_item.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -12,6 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? errorText;
   final TodoRepository _todoRepository = TodoRepository();
 
   final Color _primaryColor = const Color(0xff00d7f3);
@@ -30,8 +30,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _todoRepository.getTodos().then((value) => setState(() {
-      _todos.addAll(value);
-    }));
+          _todos.addAll(value);
+        }));
   }
 
   @override
@@ -59,9 +59,19 @@ class _HomePageState extends State<HomePage> {
                       child: TextField(
                         controller: _todoController,
                         // onChanged: changed,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Adicione uma tarefa',
-                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(
+                            color: Colors.lightBlue[700],
+                            fontSize: 16,
+                          ),
+                          errorText: errorText,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: _primaryColor,
+                            ),
+
+                          ),
                         ),
                       ),
                     ),
@@ -148,10 +158,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   addTask() {
+    if (_todoController.text.isEmpty) {
+      setState(() {
+        errorText = 'A tarefa não pode estar vazia.';
+      });
+      return;
+    }
     setState(() {
       _todos.add(Todo(title: _todoController.text, dateTime: DateTime.now()));
       _todoController.clear();
       _todoRepository.saveTodos(_todos);
+      errorText = null;
     });
   }
 
